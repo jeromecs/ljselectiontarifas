@@ -1,0 +1,10 @@
+CREATE TABLE T_RATES (
+	ID number NOT NULL,
+	BRAND_ID number NULL,
+	PRODUCT_ID number NULL,
+	START_DATE timestamp NULL,
+	END_DATE timestamp NULL,
+	PRICE float8 NULL,
+	CURRENCY_CODE varchar(3) NULL,
+	CONSTRAINT rate_pk PRIMARY KEY (ID)
+);

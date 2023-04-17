@@ -1,0 +1,362 @@
+openapi: 3.0.3
+info:
+  title: rates
+  description: |
+    Application to send requests to Rates
+  version: 0.0.1
+  contact:
+    email: jerome.cs@gmail.com
+    name: Julio Alberto Santis Echenique
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'http://localhost:8080/'
+    description: 'Local'
+tags:
+  - name: rate
+    description: All about rate data information
+paths:
+  '/rate':
+    post:
+      tags:
+        - rate
+      summary: Post rate
+      operationId: postRate
+      description: |
+        This method allows you to create a rate.
+      requestBody:
+        $ref: '#/components/requestBodies/PostRateRequest'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostRateResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+    patch:
+      tags:
+        - rate
+      summary: Update rate price
+      operationId: patchRate
+      description: |
+        Update ofrate prices.
+      requestBody:
+        $ref: '#/components/requestBodies/PatchRateRequest'
+      responses:
+        200:
+          description: Success
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+    delete:
+      tags:
+        - rate
+      summary: Delete rate by ID
+      operationId: deleteRate
+      description: |
+        This method allows you to delete a rate by ID.
+      responses:
+        200:
+          description: Success
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+      parameters: 
+        - name: id
+          in: query
+          description: The ID
+          required: true
+          schema:
+            type: integer
+            format: int32
+  '/rate/{id}':
+    get:
+      tags:
+        - rate
+      summary: Get rate by ID
+      operationId: getRate
+      description: |
+        This method allows you to obtain a rate by ID.
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRateResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+      parameters: 
+        - name: id
+          in: path
+          description: The ID
+          required: true
+          schema:
+            type: integer
+            format: int32
+  '/rate/params':
+    get:
+      tags:
+        - rate
+      summary: Get rate by date, product ID and brand ID
+      operationId: getRateByParams
+      description: |
+        This method allows you to obtain a rate by ID.
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRateResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+      parameters: 
+        - name: rateDate
+          in: query
+          description: Date of rate
+          required: true
+          schema:
+            type: string
+            pattern: '([0-9]{4})-(?:[0-9]{2})-([0-9]{2})'
+        - name: productId
+          in: query
+          description: The product ID
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: brandId
+          in: query
+          description: The brand ID
+          required: true
+          schema:
+            type: integer
+            format: int32
+components:
+#  securitySchemes:
+#    basicAuth:     
+#      type: http
+#      scheme: basic
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnexpectedError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnauthorizedError:
+      description: Authentication information is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ForbiddenError:
+      description: Authentication was provided, but the authenticated user is not permitted to perform the requested operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  requestBodies:
+    PostRateRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PostRateRequest'
+    PatchRateRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PatchRateRequest'
+  schemas:
+    PostRateRequest:
+      type: object
+      properties:
+        id:
+          description: Unique rate identifier
+          type: integer
+          format: int32
+          example: 1
+        brandId:
+          description: Unique brand identifier
+          type: integer
+          format: int32
+          example: 1
+        productId:
+          description: Unique product identifier
+          type: integer
+          format: int32
+          example: 1
+        startDate:
+          description: Rate start date
+          type: string
+          example: "01-04-2023T00:00:00Z"
+          format: date-time
+        endDate:
+          description: Rate end date
+          type: string
+          example: "30-04-2023T23:59:59Z"
+          format: date-time
+        price:
+          description: Product price without decimals
+          type: integer
+          format: int32
+          example: 30
+        currencyCode:
+          description: ID of the currency in which the price is represented
+          type: string
+          example: "EUR"
+      required:
+        - id
+        - brandId
+        - productId
+        - startDate
+        - endDate
+        - price
+        - currencyCode
+    PostRateResponse:
+      type: object
+      properties:
+        id:
+          description: Unique rate identifier
+          type: integer
+          format: int32
+          example: 1
+        brandId:
+          description: Unique brand identifier
+          type: integer
+          format: int32
+          example: 1
+        productId:
+          description: Unique product identifier
+          type: integer
+          format: int32
+          example: 1
+        startDate:
+          description: Rate start date
+          type: string
+          example: "01-04-2023T00:00:00Z"
+          format: date-time
+        endDate:
+          description: Rate end date
+          type: string
+          example: "30-04-2023T23:59:59Z"
+          format: date-time
+        price:
+          description: Product price without decimals
+          type: integer
+          format: int32
+          example: 30
+        currencyCode:
+          description: ID of the currency in which the price is represented
+          type: string
+          example: "EUR"
+    GetRateResponse:
+      type: object
+      properties:
+        id:
+          description: Unique rate identifier
+          type: integer
+          format: int32
+          example: 1
+        brandId:
+          description: Unique brand identifier
+          type: integer
+          format: int32
+          example: 1
+        productId:
+          description: Unique product identifier
+          type: integer
+          format: int32
+          example: 1
+        startDate:
+          description: Rate start date
+          type: string
+          example: "01-04-2023T00:00:00Z"
+          format: date-time
+        endDate:
+          description: Rate end date
+          type: string
+          example: "30-04-2023T23:59:59Z"
+          format: date-time
+        price:
+          description: Product price
+          type: string
+          format: currency
+          example: "30.5"
+        currencyCode:
+          description: ID of the currency in which the price is represented
+          type: string
+          example: "EUR"
+        currencySymbol:
+          description: Symbol of the currency in which the price is represented
+          type: string
+          example: "€"
+    PatchRateRequest:
+      type: object
+      properties:
+        id:
+          description: Unique rate identifier
+          type: integer
+          format: int32
+          example: 1
+        price:
+          description: Product price
+          type: number
+          format: currency
+          example: 33.7
+    ErrorResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Exception message
+          example: Not Found
+        exception:
+          type: string
+          description: Exception name
+          example: NullPointerException
+        timestamp:
+          type: string
+          format: date-time
+          description: Creation date and time
+          example: "2021-01-30T08:30:00Z"
+        status:
+          type: integer
+          description: Status response
+          example: 503
